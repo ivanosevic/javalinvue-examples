@@ -16,13 +16,17 @@ public class JavalinVueExamplesApplication {
         app.get("/api/dishes", ctx -> {
             var dishes = dishRepository.findAll();
             if (dishes.isEmpty()) {
+                // Status helps to define the status of a call.
                 ctx.status(HttpStatus.NO_CONTENT);
+                // End of the function. Endpoint will stop here.
                 return;
             }
             ctx.json(dishes);
         });
 
         app.post("/api/dishes", ctx -> {
+            // We are telling Javalin that the body of the request
+            // will be a Dish class, and we want it as a JSON.
             var dish = ctx.bodyAsClass(Dish.class);
             dishRepository.create(dish);
             ctx.status(HttpStatus.CREATED);
