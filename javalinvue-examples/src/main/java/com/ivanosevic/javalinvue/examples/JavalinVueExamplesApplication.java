@@ -4,14 +4,26 @@ import com.ivanosevic.javalinvue.examples.dishes.DishController;
 import com.ivanosevic.javalinvue.examples.dishes.DishRepository;
 import com.ivanosevic.javalinvue.examples.dishes.InMemoryDishRepository;
 import io.javalin.Javalin;
+import io.javalin.vue.VueComponent;
 
 public class JavalinVueExamplesApplication {
     public static void main(String[] args) {
         DishRepository dishRepository = new InMemoryDishRepository();
-
-        var app = Javalin.create();
         var dishController = new DishController(dishRepository);
+
+        var app = Javalin.create(configuration -> {
+            // Enable WebJars
+            configuration.staticFiles.enableWebjars();
+
+            // If we want to use Vue3, we need to tell JavalinVue what's the
+            // vueApplicationName
+            configuration.vue.vueAppName = "app";
+        });
+
         dishController.routes(app);
+
+
+        app.get("/", new VueComponent("index"));
 
         app.start(7000);
     }
