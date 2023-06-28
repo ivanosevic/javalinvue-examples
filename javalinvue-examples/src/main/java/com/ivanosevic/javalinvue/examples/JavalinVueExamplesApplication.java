@@ -18,13 +18,20 @@ public class JavalinVueExamplesApplication {
             // If we want to use Vue3, we need to tell JavalinVue what's the
             // vueApplicationName
             configuration.vue.vueAppName = "app";
+
+            // Very important if you want to debug your endpoints
+            configuration.plugins.enableDevLogging();
+
+            // Shows you all application routes
+            configuration.plugins.enableRouteOverview("/api/v1/routes");
         });
 
         dishController.routes(app);
 
 
+        app.get("/counter", new VueComponent("counter"));
         app.get("/", new VueComponent("index"));
 
-        app.start(7000);
+        app.start(7070);
     }
 }
