@@ -1,0 +1,7 @@
+POST http://localhost:7000/api/dishes
+Content-Type: application/json
+
+{
+  "name": "Sancocho",
+  "price": 149.99
+}

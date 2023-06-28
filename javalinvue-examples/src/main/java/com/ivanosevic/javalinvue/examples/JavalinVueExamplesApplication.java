@@ -1,32 +1,42 @@
 package com.ivanosevic.javalinvue.examples;
 
+import com.ivanosevic.javalinvue.examples.dishes.Dish;
+import com.ivanosevic.javalinvue.examples.dishes.DishRepository;
+import com.ivanosevic.javalinvue.examples.dishes.InMemoryDishRepository;
 import io.javalin.Javalin;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import io.javalin.http.HttpStatus;
 
 public class JavalinVueExamplesApplication {
     public static void main(String[] args) {
-        // Creating the server instance
+        DishRepository dishRepository = new InMemoryDishRepository();
+
         var app = Javalin.create();
 
-        /*
-         * Registering our endpoint to the Javalin Server Instance
-         * In this case, we have a GET method, with the /hello-world path.
-         */
-        app.get("/hello-world", ctx -> {
-            var currentDateAsString = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
-            // Message we want to send over our endpoint.
-            var message = Map.of("message", "Hello World!", "date", currentDateAsString);
-
-            // This will convert the object to JSON (Jackson is the default converter),
-            // add all the media tags required and send it as the body of the response.
-            ctx.json(message);
+        app.get("/api/dishes", ctx -> {
+            var dishes = dishRepository.findAll();
+            if (dishes.isEmpty()) {
+                ctx.status(HttpStatus.NO_CONTENT);
+                return;
+            }
+            ctx.json(dishes);
         });
 
-        // Starting the web server at the specified port.
+        app.post("/api/dishes", ctx -> {
+            var dish = ctx.bodyAsClass(Dish.class);
+            dishRepository.create(dish);
+            ctx.status(HttpStatus.CREATED);
+        });
+
+        app.get("/api/dishes/{id}", ctx -> {
+            var dishId = ctx.pathParam("id");
+            dishRepository.findById(dishId).ifPresentOrElse(dish -> {
+                ctx.json(dish);
+            }, () -> {
+                ctx.status(HttpStatus.NOT_FOUND);
+            });
+        });
+
         app.start(7000);
     }
 }
