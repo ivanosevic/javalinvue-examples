@@ -1,8 +1,11 @@
 <template id="counter">
-  <div>
-    <p>Value: {{ value }}</p>
-    <button class="btn btn-primary" @click="increment">Increment</button>
-  </div>
+    <dashboard-layout>
+        <page-header title="Counter Example"></page-header>
+        <div>
+            <p>Value: {{ value }}</p>
+            <button class="btn btn-primary" @click="increment">Increment</button>
+        </div>
+    </dashboard-layout>
 </template>
 <script>
 app.component("counter", {

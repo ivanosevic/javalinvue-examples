@@ -1,15 +1,26 @@
 package com.ivanosevic.javalinvue.examples;
 
+import com.ivanosevic.javalinvue.examples.countries.CountryController;
+import com.ivanosevic.javalinvue.examples.countries.InMemoryCountryRepository;
+import com.ivanosevic.javalinvue.examples.dishes.DashboardController;
 import com.ivanosevic.javalinvue.examples.dishes.DishController;
-import com.ivanosevic.javalinvue.examples.dishes.DishRepository;
 import com.ivanosevic.javalinvue.examples.dishes.InMemoryDishRepository;
+import com.ivanosevic.javalinvue.examples.suppliers.InMemorySupplierRepository;
+import com.ivanosevic.javalinvue.examples.suppliers.SuppliersController;
 import io.javalin.Javalin;
-import io.javalin.vue.VueComponent;
 
 public class JavalinVueExamplesApplication {
     public static void main(String[] args) {
-        DishRepository dishRepository = new InMemoryDishRepository();
+        var dishRepository = new InMemoryDishRepository();
+        var supplierRepository = new InMemorySupplierRepository();
+        var countryRepository = new InMemoryCountryRepository();
+
+        var countryController = new CountryController(countryRepository);
+        var supplierController = new SuppliersController(supplierRepository);
         var dishController = new DishController(dishRepository);
+        var counterController = new CounterController();
+        var dashboardController = new DashboardController();
+        var serverSideExampleController = new ServerSideExampleController();
 
         var app = Javalin.create(configuration -> {
             // Enable WebJars
@@ -23,15 +34,16 @@ public class JavalinVueExamplesApplication {
             configuration.plugins.enableDevLogging();
 
             // Shows you all application routes
-            configuration.plugins.enableRouteOverview("/api/v1/routes");
+            configuration.plugins.enableRouteOverview("/api/routes");
         });
 
+        dashboardController.routes(app);
+        counterController.routes(app);
         dishController.routes(app);
+        serverSideExampleController.routes(app);
+        supplierController.routes(app);
+        countryController.routes(app);
 
-
-        app.get("/counter", new VueComponent("counter"));
-        app.get("/", new VueComponent("index"));
-
-        app.start(7070);
+        app.start(7000);
     }
 }
